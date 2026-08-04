@@ -7,7 +7,8 @@ const Home = () => {
     <>
         <h1 className='title'>Locker System</h1>
         <div>
-        <Link to="/locker">Cadastrar locker</Link>
+        <Link to="/locker">Cadastrar locker</Link> <br></br>
+        <Link to="/lockers">Visualizar Lockers</Link>
         </div>
     </>
   )

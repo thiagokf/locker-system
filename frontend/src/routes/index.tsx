@@ -4,6 +4,7 @@ import {createBrowserRouter} from "react-router-dom";
 import App from "../App.tsx";
 import Home from "../pages/Home.tsx";
 import Locker from "../pages/Locker.tsx"
+import Lockers from "../pages/Lockers.tsx"
 const router = createBrowserRouter([
   {
     path: "/",
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
       {
         path: "/locker",
         element: <Locker />
+      },
+      {
+        path: "/lockers",
+        element: <Lockers />
       }
     ]
   }

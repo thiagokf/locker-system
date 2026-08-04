@@ -1,4 +1,4 @@
-export interface Locker{
-    id: number;
-    loc: string;
+export interface LockerProps{
+    id: number,
+    localizacao: string;
 }
