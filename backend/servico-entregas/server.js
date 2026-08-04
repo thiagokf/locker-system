@@ -19,7 +19,7 @@ db.run(`CREATE TABLE IF NOT EXISTS entregas (
         id INTEGER PRIMARY KEY,
         locker_id INTEGER NOT NULL,
         compartimento_id INTEGER NOT NULL,
-        condomino_id INTEGER NOT NULL,
+        tamanho_pedido TEXT NOT NULL,
         codigo_retirada TEXT NOT NULL,
         status TEXT NOT NULL DEFAULT 'PENDENTE' CHECK(status IN ('PENDENTE', 'RETIRADA'))
     )`
@@ -39,29 +39,24 @@ app.get('/entregas', (req, res) => {
 // post depositar entregas
 app.post('/entregas/depositar', async (req, res) => {
     try {
-        const { locker_id, condomino_id, tamanho_pedido } = req.body;
+        const { locker_id, tamanho_pedido } = req.body;
 
-        //validar condomino
-        const resCondomino = await axios.get(`http://localhost:3001/condominos/${condomino_id}`)
-        const condomino = resCondomino.data;
+        if (!locker_id || !tamanho_pedido) {
+            return res.status(400).json({ erro: 'locker_id e tamanho_pedido são obrigatórios' });
+        }
 
         //achar compartimento livre
-        const resCompartimentos = await axios.get('http://localhost:3002/locker/compartimento')
-        const compartimentos = resCompartimentos.data
-        console.log(compartimentos)
+        const resCompartimentos = await axios.get(`http://localhost:3002/locker/compartimento/${locker_id}/${tamanho_pedido}`)
+        const compartimentoDisponivel = resCompartimentos.data
 
-        const compartimentoDisponivel = compartimentos.find(comp => comp.tamanho === tamanho_pedido && comp.status === 'LIVRE' && comp.locker_id === locker_id)
 
-        if (!compartimentoDisponivel) {
-            return res.status(422).json({ 'erro': `Nenhum compartimento com o tamanho ${tamanho_pedido} livre foi encontrado` })
-        }
         const compartimento_id = compartimentoDisponivel.id
-
+        console.log(compartimentoDisponivel);
         //gerar token de retirada (frufru)
         const tokenRetirada = Math.random().toString(36).substring(2, 6).toUpperCase();
 
         //response
-        db.run(`INSERT INTO entregas (locker_id, compartimento_id, condomino_id, codigo_retirada) VALUES (?, ?, ?, ?)`, [locker_id, compartimento_id, condomino_id, tokenRetirada], async (err) => {
+        db.run(`INSERT INTO entregas (locker_id, compartimento_id, tamanho_pedido, codigo_retirada) VALUES (?, ?, ?, ?)`, [locker_id, compartimento_id, tamanho_pedido, tokenRetirada], async (err) => {
             if (err) {
                 console.log(err)
                 res.status(500).json({ erro: 'erro ao registrar entrega' })
@@ -93,7 +88,7 @@ app.post('/entregas/retirada/:codigo_retirada', (req, res) => {
             res.status(404).json({ erro: 'entrega não encontrada' })
         } else {
             console.log(row)
-            const { id, locker_id, compartimento_id, condomino_id } = row
+            const { id, locker_id, compartimento_id } = row
 
             const dados_comp = {
                 locker_id: locker_id,
@@ -111,8 +106,7 @@ app.post('/entregas/retirada/:codigo_retirada', (req, res) => {
             // criar log
             const dados_log = {
                 entrega_id: id,
-                compartimento_id: compartimento_id,
-                condomino_id: condomino_id
+                compartimento_id: compartimento_id
             }
             const log = await axios.post(`http://localhost:3004/logs`, dados_log)
 

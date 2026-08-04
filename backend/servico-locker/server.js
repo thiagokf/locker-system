@@ -74,15 +74,32 @@ app.get('/locker', (req, res, next) => {
 
 // post compartimenos
 app.post('/locker/compartimento', (req, res) => {
-    const { locker_id, tamanho } = req.body
-    
-    db.run(`INSERT INTO compartimentos (locker_id, tamanho) VALUES (?, ?)`, [locker_id, tamanho.toUpperCase()], (err) => {
+    const { locker_id, tamanho } = req.body;
+
+    if (!locker_id || !tamanho) {
+        return res.status(400).json({ erro: 'locker_id e tamanho são obrigatórios' });
+    }
+
+    const tamanhoNormalizado = String(tamanho).toUpperCase();
+
+    db.get(`SELECT id FROM lockers WHERE id = ?`, [locker_id], (err, locker) => {
         if (err) {
-            console.log(err)
-            res.status(500).json({ 'erro': 'erro ao cadastrar compartimento' })
-        } else {
-            res.status(200).json({ 'menssage': 'compartimento cadastrado!' })
+            console.log(err);
+            return res.status(500).json({ erro: 'erro ao validar locker' });
         }
+
+        if (!locker) {
+            return res.status(404).json({ erro: 'locker não encontrado' });
+        }
+
+        db.run(`INSERT INTO compartimentos (locker_id, tamanho) VALUES (?, ?)`, [locker_id, tamanhoNormalizado], (insertErr) => {
+            if (insertErr) {
+                console.log(insertErr);
+                return res.status(500).json({ erro: 'erro ao cadastrar compartimento' });
+            }
+
+            res.status(200).json({ message: 'compartimento cadastrado!' });
+        });
     });
 });
 
@@ -99,7 +116,7 @@ app.get('/locker/compartimento', (req, res) => {
     });
 });
 
-// ge compartimento por id
+// get compartimento por id
 app.get('/locker/compartimento/:id', (req, res) => {
     const { id } = req.params;
 
@@ -130,6 +147,25 @@ app.patch('/locker/compartimento/:id/status', (req, res) => {
     });
 });
 
+// get compartimento de tamanho
+app.get('/locker/compartimento/:id/:tamanho', (req, res) => {
+    const { id, tamanho } = req.params;
+    const tamanhoNormalizado = String(tamanho).toUpperCase();
+
+    db.get(`SELECT * FROM compartimentos WHERE tamanho = ? AND locker_id = ? AND status = "LIVRE" ORDER BY id LIMIT 1`, [tamanhoNormalizado, id], function(err, result) {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ erro: 'erro no servidor' });
+        }
+
+        if (!result) {
+            console.log('nenhum compartimento disponível');
+            return res.status(404).json({ erro: 'Nenhum compartimento disponivel' });
+        }
+
+        return res.status(200).json(result);
+    });
+});
 // Inicia o Servidor HTTP na porta 8090
 let porta = 3002;
 app.listen(porta, () => {

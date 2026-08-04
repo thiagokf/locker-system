@@ -19,7 +19,6 @@ db.run(`CREATE TABLE IF NOT EXISTS logs_entregas (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         entrega_id INTEGER NOT NULL,
         compartimento_id INTEGER NOT NULL,
-        condomino_id INTEGER NOT NULL,
         data_registro TEXT NOT NULL 
     )`,
     [], (err) => {
@@ -29,9 +28,9 @@ db.run(`CREATE TABLE IF NOT EXISTS logs_entregas (
 
 // post do log
 app.post('/logs', (req, res) => {
-    const { entrega_id, compartimento_id, condomino_id } = req.body
+    const { entrega_id, compartimento_id } = req.body
 
-    db.run(`INSERT INTO logs_entregas (entrega_id, compartimento_id, condomino_id, data_registro) VALUES (?, ? ,? ,?)`, [entrega_id, compartimento_id, condomino_id, new Date().toISOString()], (err) => {
+    db.run(`INSERT INTO logs_entregas (entrega_id, compartimento_id, data_registro) VALUES (?, ?, ?)`, [entrega_id, compartimento_id, new Date().toISOString()], (err) => {
         if (err) {
             res.status(500).json({ 'erro': 'erro ao regisrtar log da entrega' });
         } else {
