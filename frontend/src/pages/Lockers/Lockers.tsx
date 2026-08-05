@@ -1,10 +1,11 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { getLockers } from '../lib/actions';
-import type { LockerProps } from '../types/locker';
+import { getLockers } from '../../lib/actions';
+import type { LockerProps } from '../../types/locker';
 import { Link } from "react-router-dom";
 
-import LockerCard from '../components/lockerCard'
+import classes from './lockers.module.css'
+import LockerCard from '../../components/lockerCard'
 
 const Lockers = () => {
     const [lockers, setLockers] = useState<LockerProps[]>([]);

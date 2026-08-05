@@ -2,9 +2,9 @@ import {createBrowserRouter} from "react-router-dom";
 
 // pages
 import App from "../App.tsx";
-import Home from "../pages/Home.tsx";
-import Locker from "../pages/Locker.tsx"
-import Lockers from "../pages/Lockers.tsx"
+import Home from "../pages/Home/Home.tsx";
+import Locker from "../pages/Locker/Locker.tsx";
+import Lockers from "../pages/Lockers/Lockers.tsx";
 const router = createBrowserRouter([
   {
     path: "/",

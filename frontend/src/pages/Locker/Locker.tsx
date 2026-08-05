@@ -1,8 +1,10 @@
 import React from 'react'
 import { useState, useRef } from 'react';
-import { postLocker } from '../lib/actions';
+import { postLocker } from '../../lib/actions';
 import { Link } from 'react-router-dom'
-import type { LockerProps } from '../types/locker';
+import type { LockerProps } from '../../types/locker';
+
+import classes from './Locker.module.css'
 
 const Locker = () => {
   const [sucess, setSucess] = useState<boolean | null>(null);
@@ -10,7 +12,7 @@ const Locker = () => {
   let new_locker = {} as LockerProps;
 
   // Tipar o useRef pro type Script saber o que vai guardar
-  const id = useRef<HTMLInputElement>(null);
+
   const localizacao = useRef<HTMLInputElement>(null);
 
   // função de post do locker quando cadastrado
@@ -23,7 +25,7 @@ const Locker = () => {
       return
     }
     console.log("Atribuindo a variavel");
-    new_locker.loc = String(localizacao.current.value);
+    new_locker.localizacao = String(localizacao.current.value);
     console.log("deu boa, fazendo o post pelo axios");
     console.log('Atribuindo a variável:', new_locker);
 
@@ -44,14 +46,17 @@ const Locker = () => {
 
   return (
     <>
-      <form onSubmit={cadastrar_locker}>
+    <div className={classes.main}>
+
+      <form className={classes.form} onSubmit={cadastrar_locker}>
         <h1>Cadastro de locker</h1>
         <input placeholder="localização" type="text" ref={localizacao} />
         <button type="submit"> cadastrar </button>
         <p>{mensagem}</p>
+      <Link to="/">Voltar</Link>
       </form>
       {sucess === true ? "Cadastro Feito!" : sucess === false ? "Erro ao cadastrar" : null}
-      <Link to="/">Voltar</Link>
+    </div>
     </>
   )
 }
