@@ -21,15 +21,24 @@ const Lockers = () => {
     },[])
   return (
     <>
-        <div>Lockers</div>
-        <div>
-            {lockers.map((lock) => (
-                <LockerCard key={lock.id} {...lock}/>
-            ))}
+    <div className={classes.main}>
+      <div className={classes.header}>
+        <h1 className={classes.title}>Lockers Disponíveis</h1>
+      </div>
+      <div className={classes.body}>
+        <div className={classes.grid}>
+          {lockers.length > 0 ? (
+            lockers.map((lock) => (
+              <LockerCard key={lock.id} {...lock}/>
+            ))
+          ) : (
+            <p className={classes.empty}>Nenhum locker cadastrado</p>
+          )}
         </div>
-        <Link to="/">Voltar</Link>
+        <Link className={classes.backButton} to="/">← Voltar</Link>
+      </div>
+    </div>
     </>
-
   )
 }
 

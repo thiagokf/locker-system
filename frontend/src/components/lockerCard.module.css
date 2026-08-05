@@ -1,0 +1,107 @@
+.card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 250px;
+  width: 100%;
+  max-width: 280px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+
+.content {
+  flex: 0 0 auto;
+  text-align: center;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.localizacao {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  word-break: break-word;
+}
+
+.id {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.button {
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  background-color: #f1f5f9;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.view {
+  background-color: #dbeafe;
+  border-color: #3c94ff;
+}
+
+.view:hover {
+  background-color: #bfdbfe;
+}
+
+.add {
+  background-color: #dcfce7;
+}
+
+.add:hover {
+  background-color: #bbf7d0;
+}
+
+.delete {
+  background-color: #fee2e2;
+}
+
+.delete:hover {
+  background-color: #fca5a5;
+}
+
+@media (max-width: 600px) {
+  .card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

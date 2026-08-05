@@ -53,8 +53,8 @@ app.post('/locker', (req, res) => {
                 console.log(err)
                 res.status(500).json({ 'erro': 'Erro ao cadastrar locker' })
             } else {
-                console.log('Cliente cadastrado com sucesso!');
-                res.status(200).send('Cliente cadastrado com sucesso!');
+                console.log('Locker cadastrado com sucesso!');
+                res.status(200).send('Locker cadastrado com sucesso!');
             }
         }
     )
@@ -70,6 +70,30 @@ app.get('/locker', (req, res, next) => {
             res.status(200).json(result);
         }
     });
+});
+
+// delete locker
+app.delete('/locker', (req,res) => {
+    const { id } = req.body;
+
+    db.get(`SELECT * FROM lockers l 
+        JOIN compartimentos c 
+            ON l.id = c.locker_id 
+        WHERE c.status = 'OCUPADO' AND l.id = ?`, [id], (err, result) => {
+        if (err) {
+            res.status(500).send('Erro no servidor')
+        } else if (result) {
+            res.status(400).send('O locker escolhido possui compartimento ocupado')
+        } else {
+            db.run(`DELETE FROM lockers WHERE id = ?`, [id], (err) => {
+                if (err) {
+                    res.status(500).send('Erro no servidor')
+                } else {
+                    res.status(200).send('Locker excluido com sucesso')
+                }
+            })
+        }
+    })
 });
 
 // post compartimenos
