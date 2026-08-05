@@ -16,11 +16,11 @@
 }
 
 .header {
+  position: relative;
   width: min(1200px, 100%);
   padding: 28px 32px;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 20px 20px 0 0;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
   text-align: center;
 }
 
@@ -60,7 +60,10 @@
 }
 
 .backButton {
-  width: 100%;
+  position: absolute; /* Posicionamento absoluto em relação ao .header */
+  top: 24px;          /* Distância do topo */
+  left: 32px;         /* Distância da esquerda */
+  width: auto;
   max-width: 320px;
   padding: 12px 20px;
   background: rgba(148, 163, 184, 0.1);

@@ -34,7 +34,9 @@ db.run(`CREATE TABLE IF NOT EXISTS compartimentos (
         locker_id INTEGER NOT NULL,
         tamanho TEXT NOT NULL CHECK(tamanho IN ('P', 'M', 'G', 'XG')),
         status TEXT NOT NULL DEFAULT 'LIVRE' CHECK(status IN ('LIVRE', 'OCUPADO')),
-        FOREIGN KEY (locker_id) REFERENCES lockers(id))`,
+        FOREIGN KEY (locker_id) 
+            REFERENCES lockers(id)
+            ON DELETE CASCADE)`,
     [], (err) => {
         if (err) {
             console.log('ERRO: não foi possível criar tabela.');
@@ -73,21 +75,24 @@ app.get('/locker', (req, res, next) => {
 });
 
 // delete locker
-app.delete('/locker', (req,res) => {
-    const { id } = req.body;
-
+app.delete('/locker/:id', (req,res) => {
+    const { id } = req.params;
+    console.log('na funcao delete')
     db.get(`SELECT * FROM lockers l 
         JOIN compartimentos c 
             ON l.id = c.locker_id 
-        WHERE c.status = 'OCUPADO' AND l.id = ?`, [id], (err, result) => {
+        WHERE c.status = 'OCUPADO' AND l.id = ?`, [id], (err, result) => {        
         if (err) {
-            res.status(500).send('Erro no servidor')
+            res.status(500).send('Erro no servidor 1')
         } else if (result) {
-            res.status(400).send('O locker escolhido possui compartimento ocupado')
+            console.log(result)
+            res.status(400).send('O locker escolhido possui compartimento ocupado');
         } else {
-            db.run(`DELETE FROM lockers WHERE id = ?`, [id], (err) => {
+            console.log("nenhum compartimento ocupado")
+            db.run(`DELETE CASCADE FROM lockers WHERE id = ?`, [id], (err) => {
                 if (err) {
-                    res.status(500).send('Erro no servidor')
+                    console.log(err)
+                    res.status(500).send('Erro no servidor2')
                 } else {
                     res.status(200).send('Locker excluido com sucesso')
                 }
@@ -190,7 +195,7 @@ app.get('/locker/compartimento/:id/:tamanho', (req, res) => {
         return res.status(200).json(result);
     });
 });
-// Inicia o Servidor HTTP na porta 8090
+
 let porta = 3002;
 app.listen(porta, () => {
     console.log('Servidor em execução na porta: ' + porta);

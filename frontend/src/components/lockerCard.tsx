@@ -1,8 +1,33 @@
 import React from 'react';
 import type { LockerProps } from '../types/locker';
 import classes from './lockerCard.module.css';
+import { deleteLocker } from '../lib/actions';
 
-const LockerCard = ({id, localizacao}: LockerProps) => {
+interface LockerCardProps extends LockerProps {
+  onDelete?: (id: number) => void;
+}
+
+const LockerCard = ({id, localizacao, onDelete}: LockerCardProps) => {
+  const handleDelete = async () => {
+    if (window.confirm(`Tem certeza que deseja deletar o locker "${localizacao}"?`)) {
+      try {
+        const response = await deleteLocker(id);
+        if (response?.status === 200 || response?.status === 204) {
+          onDelete?.(id);
+        } else if (response?.status == 400) {
+          alert('Locker possui compartimento ocupado');
+        } else {
+          console.log(response.status)
+          console.log(response.data)
+          alert('Erro do servidor ao deletar locker');
+        }
+      } catch (error) {
+        console.error('Erro ao deletar:', error);
+        alert('Erro ao deletar lockeraaa');
+      }
+    }
+  }
+
   return (
     <div className={classes.card}>
       <div className={classes.content}>
@@ -14,7 +39,7 @@ const LockerCard = ({id, localizacao}: LockerProps) => {
       <div className={classes.actions}>
         <button className={`${classes.button} ${classes.view}`} title="Ver compartimentos">Ver compartimentos</button> 
         <button className={`${classes.button} ${classes.add}`} title="Adicionar item">Adicionar compartimento</button>
-        <button className={`${classes.button} ${classes.delete}`} title="Deletar locker">Deletar locker</button>
+        <button className={`${classes.button} ${classes.delete}`} onClick={handleDelete} title="Deletar locker">Deletar locker</button>
       </div>
     </div>
   )

@@ -17,25 +17,28 @@ const Lockers = () => {
         }
 
         loadLockers();
-        console.log(lockers)
     },[])
+
+    const handleDeleteLocker = (id: number) => {
+        setLockers(lockers.filter(lock => lock.id !== id));
+    }
   return (
     <>
     <div className={classes.main}>
       <div className={classes.header}>
         <h1 className={classes.title}>Lockers Disponíveis</h1>
+        <Link className={classes.backButton} to="/">← Voltar</Link>
       </div>
       <div className={classes.body}>
         <div className={classes.grid}>
           {lockers.length > 0 ? (
-            lockers.map((lock) => (
-              <LockerCard key={lock.id} {...lock}/>
-            ))
-          ) : (
-            <p className={classes.empty}>Nenhum locker cadastrado</p>
-          )}
+              lockers.map((lock) => (
+                  <LockerCard key={lock.id} {...lock} onDelete={handleDeleteLocker}/>
+                ))
+            ) : (
+                <p className={classes.empty}>Nenhum locker cadastrado</p>
+            )}
         </div>
-        <Link className={classes.backButton} to="/">← Voltar</Link>
       </div>
     </div>
     </>
