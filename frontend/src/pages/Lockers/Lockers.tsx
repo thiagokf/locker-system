@@ -4,7 +4,7 @@ import { getLockers } from '../../lib/actions';
 import type { LockerProps } from '../../types/locker';
 import { Link } from "react-router-dom";
 
-import classes from './lockers.module.css'
+import classes from './Lockers.module.css'
 import LockerCard from '../../components/lockerCard'
 
 const Lockers = () => {

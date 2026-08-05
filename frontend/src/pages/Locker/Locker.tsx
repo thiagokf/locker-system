@@ -12,7 +12,6 @@ const Locker = () => {
   let new_locker = {} as LockerProps;
 
   // Tipar o useRef pro type Script saber o que vai guardar
-
   const localizacao = useRef<HTMLInputElement>(null);
 
   // função de post do locker quando cadastrado
@@ -21,7 +20,6 @@ const Locker = () => {
     setSucess(null);
     if (!localizacao.current || !localizacao.current.value) {
       setMensagem("Id ou localização invalida")
-      console.log("Id ou localização invalida");
       return
     }
     console.log("Atribuindo a variavel");
@@ -31,31 +29,47 @@ const Locker = () => {
 
     try {
       const res = await postLocker(new_locker);
-      if (res.ok){
+      if (res.status === 200) {
         setSucess(true);
       } else {
         setSucess(false);
       }
-      setMensagem(String(res));
+      setMensagem(String(res.data));
+      if (localizacao.current) localizacao.current.value = "";
     } catch (e) {
       console.error(e);
       setSucess(false);
-      setMensagem('Deu boga!');
+      setMensagem('Erro ao conectar com o servidor!');
     }
   }
 
   return (
     <>
     <div className={classes.main}>
-
-      <form className={classes.form} onSubmit={cadastrar_locker}>
-        <h1>Cadastro de locker</h1>
-        <input placeholder="localização" type="text" ref={localizacao} />
-        <button type="submit"> cadastrar </button>
-        <p>{mensagem}</p>
-      <Link to="/">Voltar</Link>
-      </form>
-      {sucess === true ? "Cadastro Feito!" : sucess === false ? "Erro ao cadastrar" : null}
+      <div className={classes.header}>
+        <h1 className={classes.title}>Cadastro de Locker</h1>
+      </div>
+      <div className={classes.body}>
+        <form className={classes.form} onSubmit={cadastrar_locker}>
+          <div className={classes.formGroup}>
+            <input 
+              className={classes.input} 
+              placeholder="Localização do locker" 
+              type="text" 
+              ref={localizacao} 
+              />
+          <button className={classes.submitButton} type="submit">
+            Cadastrar Locker
+          </button>
+          {sucess !== null && (
+              <p className={classes.message} data-success={sucess}>
+                {mensagem}
+              </p>
+            )}
+          </div>
+        </form>
+        <Link className={classes.backButton} to="/">← Voltar</Link>
+      </div>
     </div>
     </>
   )

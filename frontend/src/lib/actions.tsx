@@ -6,16 +6,21 @@ export async function postLocker(new_locker: LockerProps){
     const dados = {
         localizacao: new_locker.localizacao,
     };
+
+    const response = {
+        "status": 0,
+        "data": "Erro no servidor"
+    }
     try {
         const response = await api.post('/locker', dados)
+        console.log("reposnse")
         console.log(response)
-        const json = response.data;
 
-        return json;
+        return response;
     }
     catch (error){
         console.error("Erro ao fazer post do locker:", error);
-        return "Erro no servidor";
+        return response
     }
 }
 
