@@ -5,6 +5,8 @@ import App from "../App.tsx";
 import Home from "../pages/Home/Home.tsx";
 import Locker from "../pages/Locker/Locker.tsx";
 import Lockers from "../pages/Lockers/Lockers.tsx";
+import Compartimento from "../pages/Compartimento/Compartimento.tsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -20,7 +22,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/lockers",
-        element: <Lockers />
+        element: <Lockers />,
+      },
+      {
+        path: "/:id/compartimento",
+        element: <Compartimento />
       }
     ]
   }

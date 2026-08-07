@@ -102,10 +102,13 @@ app.delete('/locker/:id', (req,res) => {
 });
 
 // post compartimenos
-app.post('/locker/compartimento', (req, res) => {
-    const { locker_id, tamanho } = req.body;
+app.post('/locker/compartimento/:locker_id', (req, res) => {
+    const { tamanho } = req.body;
+    const { locker_id } = req.params;
+    console.log(locker_id)
 
     if (!locker_id || !tamanho) {
+        console.log("erro 1")
         return res.status(400).json({ erro: 'locker_id e tamanho são obrigatórios' });
     }
 

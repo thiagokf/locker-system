@@ -1,5 +1,6 @@
 import api from "../service/api";
 import type { LockerProps } from "../types/locker";
+import type { CompartimentoProps } from "../types/compartimento";
 import axios from 'axios';
 
 export async function postLocker(new_locker: LockerProps){
@@ -8,10 +9,6 @@ export async function postLocker(new_locker: LockerProps){
         localizacao: new_locker.localizacao,
     };
 
-    const response = {
-        "status": 0,
-        "data": "Erro no servidor"
-    }
     try {
         const response = await api.post('/locker', dados)
 
@@ -19,7 +16,7 @@ export async function postLocker(new_locker: LockerProps){
     }
     catch (error){
         console.error("Erro ao fazer post do locker:", error);
-        return response
+        throw error;
     }
 }
 
@@ -59,6 +56,31 @@ export async function deleteLocker(id: number) {
         return {
             status: 500,
             data: "Erro de conexão do servidor"
+        }
+    }
+}
+
+export async function postCompartimento(new_comp: CompartimentoProps){
+    const dados = {
+        locker_id: new_comp.locker_id,
+        tamanho: new_comp.tamanho
+    }
+
+    console.log(dados.locker_id);
+    try {
+        const res = await api.post(`/locker/compartimento/${dados.locker_id}`, dados);
+
+        console.log(res);
+        return res
+    } catch (error) {
+        console.error("Erro ao alocar compartimento ", error);
+
+        if (axios.isAxiosError(error) && error.response){
+            const res = {
+                status: error.response.status,
+                data: error.response.data
+            }
+            return res
         }
     }
 }
