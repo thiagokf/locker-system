@@ -5,7 +5,7 @@ import type { LockerProps } from '../../types/locker';
 import { Link } from "react-router-dom";
 
 import classes from './Lockers.module.css'
-import LockerCard from '../../components/lockerCard'
+import LockerCard from '../../components/lockerCard/lockerCard'
 
 const Lockers = () => {
     const [lockers, setLockers] = useState<LockerProps[]>([]);

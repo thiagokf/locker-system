@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import type { LockerProps } from '../types/locker';
+import type { LockerProps } from '../../types/locker';
 import classes from './lockerCard.module.css';
-import { deleteLocker } from '../lib/actions';
+import { deleteLocker } from '../../lib/actions';
 
 interface LockerCardProps extends LockerProps {
   onDelete?: (id: number) => void;
@@ -38,7 +38,7 @@ const LockerCard = ({id, localizacao, onDelete}: LockerCardProps) => {
         </div>
       </div>
       <div className={classes.actions}>
-        <button className={`${classes.button} ${classes.view}`} title="Ver compartimentos">Ver compartimentos</button> 
+        <Link className={`${classes.button} ${classes.view}`} to={`/${id}/${localizacao}/compartimentos`} title="Ver compartimentos">Ver compartimentos</Link> 
         <Link className={`${classes.button} ${classes.add}`} to={`/${id}/compartimento`} title="Adicionar item">Adicionar compartimento</Link>
         <button className={`${classes.button} ${classes.delete}`} onClick={handleDelete} title="Deletar locker">Deletar locker</button>
       </div>

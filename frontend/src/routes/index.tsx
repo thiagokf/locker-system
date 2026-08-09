@@ -6,6 +6,7 @@ import Home from "../pages/Home/Home.tsx";
 import Locker from "../pages/Locker/Locker.tsx";
 import Lockers from "../pages/Lockers/Lockers.tsx";
 import Compartimento from "../pages/Compartimento/Compartimento.tsx";
+import Compartimentos from "../pages/Compartimentos/Compartimentos.tsx";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "/:id/compartimento",
         element: <Compartimento />
+      },
+      {
+        path: "/:id/:localizacao/compartimentos",
+        element: <Compartimentos />
       }
     ]
   }

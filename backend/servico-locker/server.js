@@ -148,6 +148,25 @@ app.get('/locker/compartimento', (req, res) => {
     });
 });
 
+// get compartimentos por locker id
+app.get('/locker/compartimento/:locker_id', (req, res) => {
+    const { locker_id } = req.params;
+
+    console.log("Na api")
+    console.log(locker_id);
+
+    db.all(`SELECT * FROM compartimentos WHERE locker_id = ?`, [locker_id], (err, result) => {
+        if (err) {
+            console.log("erro1")
+            res.status(500).json({ 'erro': 'erro ao obter compartimentos' })
+        } else if (!result) {
+            console.log("erro2")
+            res.status(404).send('O locker não possui comparimentos alocados')
+        } else {
+            res.status(200).json(result)
+        }
+    })
+})
 // get compartimento por id
 app.get('/locker/compartimento/:id', (req, res) => {
     const { id } = req.params;

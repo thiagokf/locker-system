@@ -1,9 +1,9 @@
 import React from 'react'
 import { useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom';
 import { postCompartimento } from '../../lib/actions';
 import type { CompartimentoProps } from '../../types/compartimento';
+import classes from './Compartimento.module.css';
 
 const Compartimento = () => {
     const [sucess, setSucess] = useState<boolean | null>(null);
@@ -38,14 +38,21 @@ const Compartimento = () => {
         }
     } 
   return (
-    <>
-    <div>Compartimento</div>
-    <form onSubmit={cadastrar_compartimento}>
-        <input type="text" placeholder="Tamanho do compartimento" ref={tamanho}/>
-        <button type="submit">Cadastrar</button>
-    </form>
-    <Link to={'/lockers'}>Voltar</Link>
-    </>
+    <div className={classes.main}>
+      <div className={classes.header}>
+        <h1 className={classes.title}>Cadastrar Compartimento</h1>
+      </div>
+      <div className={classes.body}>
+        <form className={classes.form} onSubmit={cadastrar_compartimento}>
+          <input className={classes.input} type="text" placeholder="Tamanho do compartimento" ref={tamanho}/>
+          <button className={classes.submitButton} type="submit">Cadastrar</button>
+          {sucess !== null && (
+            <p className={classes.message} data-success={sucess}>{message}</p>
+          )}
+        </form>
+        <Link className={classes.backButton} to={'/lockers'}>← Voltar</Link>
+      </div>
+    </div>
   )
 }
 

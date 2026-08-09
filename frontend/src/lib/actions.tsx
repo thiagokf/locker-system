@@ -84,3 +84,25 @@ export async function postCompartimento(new_comp: CompartimentoProps){
         }
     }
 }
+
+export async function getCompartimentos(locker_id: string) {
+    try {
+        console.log("entrou no get: indo pra api")
+        const res = await api.get(`/locker/compartimento/${locker_id}`)
+        if (!res){
+            console.log("nenhum compartimento alocado")
+            return []
+        }
+        return res.data
+    } catch (error){
+        console.error("erro ao ver compartimentos ", error);
+
+        if (axios.isAxiosError(error) && error.response){
+            const res = {
+                status: error.response.status,
+                data: error.response.data
+            }
+            return res.data
+        }
+    }
+}
