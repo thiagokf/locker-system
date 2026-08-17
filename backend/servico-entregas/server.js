@@ -39,26 +39,23 @@ app.get('/entregas', (req, res) => {
 // post depositar entregas
 app.post('/entregas/depositar', async (req, res) => {
     try {
-        const { locker_id, tamanho_pedido } = req.body;
-
-        if (!locker_id || !tamanho_pedido) {
-            return res.status(400).json({ erro: 'locker_id e tamanho_pedido são obrigatórios' });
+        const { locker_id, compartimento_id, tamanho } = req.body;
+        console.log(locker_id, compartimento_id, tamanho)
+        console.log("na api")
+        
+        if (!locker_id || !tamanho || !compartimento_id) {
+            console.log("erro aqui");
+            return res.status(400).json({ erro: 'locker_id, compartimento_id e tamanho_pedido são obrigatórios' });
         }
 
-        //achar compartimento livre
-        const resCompartimentos = await axios.get(`http://localhost:3002/locker/compartimento/${locker_id}/${tamanho_pedido}`)
-        const compartimentoDisponivel = resCompartimentos.data
-
-
-        const compartimento_id = compartimentoDisponivel.id
-        console.log(compartimentoDisponivel);
         //gerar token de retirada (frufru)
         const tokenRetirada = Math.random().toString(36).substring(2, 6).toUpperCase();
+        console.log("gerou token")
 
         //response
-        db.run(`INSERT INTO entregas (locker_id, compartimento_id, tamanho_pedido, codigo_retirada) VALUES (?, ?, ?, ?)`, [locker_id, compartimento_id, tamanho_pedido, tokenRetirada], async (err) => {
+        db.run(`INSERT INTO entregas (locker_id, compartimento_id, tamanho_pedido, codigo_retirada) VALUES (?, ?, ?, ?)`, [locker_id, compartimento_id, tamanho, tokenRetirada], async (err) => {
             if (err) {
-                console.log(err)
+                console.log("erro 500")
                 res.status(500).json({ erro: 'erro ao registrar entrega' })
             } else {
                 //depositar entrega (patch no compartimento p/ ocupado)
@@ -72,6 +69,8 @@ app.post('/entregas/depositar', async (req, res) => {
     } catch (erro) {
         console.error('Erro em /entregas/depositar:', erro && (erro.message || erro));
         if (erro.response && erro.response.status === 404) {
+            console.log("deu esse erro aqui");
+            console.log(erro.response);
             return res.status(404).json({ erro: "Dado não cadastrado" });
         }
         return res.status(500).json({ erro: "Serviço fora do ar." });

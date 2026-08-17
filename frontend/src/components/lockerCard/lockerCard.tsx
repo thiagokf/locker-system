@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import type { LockerProps } from '../../types/locker';
 import classes from './lockerCard.module.css';

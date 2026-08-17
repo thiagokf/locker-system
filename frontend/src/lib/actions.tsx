@@ -1,9 +1,10 @@
+import axios from 'axios';
 import api from "../service/api";
 import type { LockerProps } from "../types/locker";
 import type { CompartimentoProps } from "../types/compartimento";
-import axios from 'axios';
+import type { EntregaProps } from "../types/entrega";
 
-export async function postLocker(new_locker: LockerProps){
+export async function postLocker(new_locker: LockerProps) {
     console.log("Entrou no metodo")
     const dados = {
         localizacao: new_locker.localizacao,
@@ -14,7 +15,7 @@ export async function postLocker(new_locker: LockerProps){
 
         return response;
     }
-    catch (error){
+    catch (error) {
         console.error("Erro ao fazer post do locker:", error);
         throw error;
     }
@@ -40,12 +41,12 @@ export async function deleteLocker(id: number) {
     try {
         console.log('netrou no try')
         const response = await api.delete(`/locker/${id}`);
- 
+
         console.log(response.data);
         return response;
     } catch (error) {
         console.error('Erro ao deletar locker:', error);
-        
+
         if (axios.isAxiosError(error) && error.response) {
             return {
                 status: error.response.status,
@@ -60,7 +61,7 @@ export async function deleteLocker(id: number) {
     }
 }
 
-export async function postCompartimento(new_comp: CompartimentoProps){
+export async function postCompartimento(new_comp: CompartimentoProps) {
     const dados = {
         locker_id: new_comp.locker_id,
         tamanho: new_comp.tamanho
@@ -75,7 +76,7 @@ export async function postCompartimento(new_comp: CompartimentoProps){
     } catch (error) {
         console.error("Erro ao alocar compartimento ", error);
 
-        if (axios.isAxiosError(error) && error.response){
+        if (axios.isAxiosError(error) && error.response) {
             const res = {
                 status: error.response.status,
                 data: error.response.data
@@ -89,20 +90,80 @@ export async function getCompartimentos(locker_id: string) {
     try {
         console.log("entrou no get: indo pra api")
         const res = await api.get(`/locker/compartimento/${locker_id}`)
-        if (!res){
+        if (!res) {
             console.log("nenhum compartimento alocado")
             return []
         }
         return res.data
-    } catch (error){
+    } catch (error) {
         console.error("erro ao ver compartimentos ", error);
 
-        if (axios.isAxiosError(error) && error.response){
+        if (axios.isAxiosError(error) && error.response) {
             const res = {
                 status: error.response.status,
                 data: error.response.data
             }
             return res.data
         }
+    }
+}
+
+export async function getCompStatus(locker_id: string, status: string, tamanho: string) {
+    try {
+        console.log("no metodo")
+        const res = await api.get(`/locker/compartimento/${locker_id}/${tamanho}`)
+
+        console.log(res)
+        if (!res) {
+            console.log("nenhum compartimento disponivel");
+            return [];
+        }
+        return res.data;
+    } catch (error) {
+        console.log("caiu no catc")
+        console.error("error no get dos compartimentos ", error)
+
+        if (axios.isAxiosError(error) && error.response) {
+            const res = {
+                status: error.response.status,
+                data: error.response.data
+            }
+            return res.data
+        }
+    }
+}
+
+export async function getEntregas() {
+    try {
+        const dados = await api.get('/entregas')
+        const res = dados.data
+
+        return res
+    }
+    catch (error) {
+        console.error("Erro ao buscar entregas", error)
+    }
+}
+
+export async function postEntrega(new_entrega: EntregaProps) {
+    if (!new_entrega) {
+        console.log("faltando requisito");
+        return
+    }
+    console.log(new_entrega);
+
+    const dados = {
+        locker_id: new_entrega.locker_id,
+        compartimento_id: new_entrega.compartimento_id,
+        tamanho: new_entrega.tamanho_produto
+    }
+    try {
+        console.log("entrou no try")
+        const res = await api.post('/entregas/depositar', dados)
+
+        return res
+    }
+    catch (error) {
+        console.error("erro no servidor: ", error);
     }
 }

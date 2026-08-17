@@ -7,6 +7,9 @@ import Locker from "../pages/Locker/Locker.tsx";
 import Lockers from "../pages/Lockers/Lockers.tsx";
 import Compartimento from "../pages/Compartimento/Compartimento.tsx";
 import Compartimentos from "../pages/Compartimentos/Compartimentos.tsx";
+import SelectLocker from "../pages/Entrega/SelectLocker.tsx";
+import SelectCompartimento from "../pages/Entrega/SelectCompartimento.tsx";
+import ViewEntregas from "../pages/Entregas/viewEntregas.tsx";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +35,18 @@ const router = createBrowserRouter([
       {
         path: "/:id/:localizacao/compartimentos",
         element: <Compartimentos />
+      },
+      {
+        path: "/entrega/selectLocker",
+        element: <SelectLocker />
+      },
+      {
+        path: "/entrega/selectCompartimento/:id/:tamanho/:status",
+        element: <SelectCompartimento />
+      },
+      {
+        path: "/entregas",
+        element: <ViewEntregas />
       }
     ]
   }

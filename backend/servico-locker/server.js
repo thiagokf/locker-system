@@ -152,7 +152,6 @@ app.get('/locker/compartimento', (req, res) => {
 app.get('/locker/compartimento/:locker_id', (req, res) => {
     const { locker_id } = req.params;
 
-    console.log("Na api")
     console.log(locker_id);
 
     db.all(`SELECT * FROM compartimentos WHERE locker_id = ?`, [locker_id], (err, result) => {
@@ -167,6 +166,30 @@ app.get('/locker/compartimento/:locker_id', (req, res) => {
         }
     })
 })
+
+// get compartimento por status
+app.get('/locker/compartimento/:locker_id/status/:status', (req, res) => {
+    const { locker_id, status } = req.params;
+
+    console.log(locker_id, status)
+    if (!locker_id || !status){
+        res.status(500).send("Precisa de locker id e status");
+    }
+
+    db.all(`SELECT * FROM compartimentos 
+            WHERE locker_id = ? AND status = ?`, [locker_id, status.toUpperCase()], (err, result) => {
+        if (err) {
+            console.log("erro1")
+            res.status(500).json({ 'erro': 'erro ao obter compartimentos' })
+        } else if (!result) {
+            console.log("erro2")
+            res.status(404).send('Sem compartimentos livres..')
+        } else {
+            res.status(200).json(result)
+        }
+    })
+})
+
 // get compartimento por id
 app.get('/locker/compartimento/:id', (req, res) => {
     const { id } = req.params;
@@ -198,12 +221,12 @@ app.patch('/locker/compartimento/:id/status', (req, res) => {
     });
 });
 
-// get compartimento de tamanho
+// get compartimento por tamanho
 app.get('/locker/compartimento/:id/:tamanho', (req, res) => {
     const { id, tamanho } = req.params;
     const tamanhoNormalizado = String(tamanho).toUpperCase();
 
-    db.get(`SELECT * FROM compartimentos WHERE tamanho = ? AND locker_id = ? AND status = "LIVRE" ORDER BY id LIMIT 1`, [tamanhoNormalizado, id], function(err, result) {
+    db.all(`SELECT * FROM compartimentos WHERE tamanho = ? AND locker_id = ? AND status = "LIVRE" ORDER BY id`, [tamanhoNormalizado, id], function(err, result) {
         if (err) {
             console.log(err);
             return res.status(500).json({ erro: 'erro no servidor' });
