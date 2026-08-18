@@ -38,7 +38,7 @@ const SelectCompartimento = () => {
 
     new_entrega.locker_id = comp.locker_id;
     new_entrega.compartimento_id = comp.id;
-    new_entrega.tamanho_produto = tamanho;
+    new_entrega.tamanho_pedido = tamanho;
 
     const res = await postEntrega(new_entrega);
 

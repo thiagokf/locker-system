@@ -120,7 +120,6 @@ export async function getCompStatus(locker_id: string, status: string, tamanho: 
         }
         return res.data;
     } catch (error) {
-        console.log("caiu no catc")
         console.error("error no get dos compartimentos ", error)
 
         if (axios.isAxiosError(error) && error.response) {
@@ -155,7 +154,7 @@ export async function postEntrega(new_entrega: EntregaProps) {
     const dados = {
         locker_id: new_entrega.locker_id,
         compartimento_id: new_entrega.compartimento_id,
-        tamanho: new_entrega.tamanho_produto
+        tamanho: new_entrega.tamanho_pedido
     }
     try {
         console.log("entrou no try")
@@ -165,5 +164,29 @@ export async function postEntrega(new_entrega: EntregaProps) {
     }
     catch (error) {
         console.error("erro no servidor: ", error);
+    }
+}
+
+export async function retirarEntrega(codigo_retirada: string) {
+    if (!codigo_retirada) {
+        console.log("erro de req");
+        return
+    }
+
+    try {
+        const res = await api.post(`/entregas/retirada/${codigo_retirada}`)
+
+        return res
+    }
+    catch (error){
+        console.error("Erro ao retirar entrega: ", error);
+
+        if (axios.isAxiosError(error) && error.response) {
+            const res = {
+                status: error.response.status,
+                data: error.response.data
+            }
+            return res.data
+        }
     }
 }

@@ -1,21 +1,45 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import type { EntregaProps } from "../../types/entrega";
-import { getEntregas } from "../../lib/actions";
+import { getEntregas, retirarEntrega } from "../../lib/actions";
+
 import classes from './viewEntregas.module.css';
 
 const viewEntregas = () => {
-  const [entregas, setEntregas] = useState<EntregaProps[]>([]);
-
-  useEffect(() => {
+    const [entregas, setEntregas] = useState<EntregaProps[]>([]);
+    
     const pegaEntregas = async () => {
       const dados = await getEntregas();
       setEntregas(dados ?? []);
     };
 
-    pegaEntregas();
-  }, []);
+  const handleRetirar = async (entrega: EntregaProps) => {
+    const codigo = window.prompt("Digite o código de retirada da entrega")
 
+    if (!codigo || codigo != entrega.codigo_retirada){
+        window.alert("Código invalido");
+        return;
+    }
+
+    const res = await retirarEntrega(entrega.codigo_retirada);
+
+    if (!res) {
+        window.alert("erro ao retirar entrega");
+        return;
+    }
+    window.alert("Entrega retirada com sucesso");
+    pegaEntregas();
+    return;
+  }
+
+  useEffect(() => {
+    
+    pegaEntregas();
+}, []);
+
+entregas.map((entrega) => (
+    console.log(entrega.tamanho_pedido)
+))
   return (
     <main className={classes.main}>
       <div className={classes.header}>
@@ -38,9 +62,10 @@ const viewEntregas = () => {
                 <div className={classes.info}>
                   <p><span className={classes.label}>Locker:</span> {entrega.locker_id}</p>
                   <p><span className={classes.label}>Compartimento:</span> {entrega.compartimento_id}</p>
-                  <p><span className={classes.label}>Tamanho:</span> {entrega.tamanho_produto}</p>
-                  <p><span className={classes.label}>Código:</span> {entrega.codigo_retirada}</p>
+                  <p><span className={classes.label}>Tamanho:</span> {entrega.tamanho_pedido}</p>
+                  <p><span className={classes.label}>Tamanho:</span> {entrega.codigo_retirada}</p>
                 </div>
+                <button onClick={() => handleRetirar(entrega)}> Retirar Pedido </button>
               </article>
             ))}
           </div>

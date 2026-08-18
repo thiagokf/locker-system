@@ -29,9 +29,12 @@ db.run(`CREATE TABLE IF NOT EXISTS logs_entregas (
 // post do log
 app.post('/logs', (req, res) => {
     const { entrega_id, compartimento_id } = req.body
-
+    console.log(entrega_id, compartimento_id);
+    
     db.run(`INSERT INTO logs_entregas (entrega_id, compartimento_id, data_registro) VALUES (?, ?, ?)`, [entrega_id, compartimento_id, new Date().toISOString()], (err) => {
         if (err) {
+            console.log(compartimento_id)
+            console.log(err)
             res.status(500).json({ 'erro': 'erro ao regisrtar log da entrega' });
         } else {
             res.status(200).json({ 'message': 'Log registrado!' })

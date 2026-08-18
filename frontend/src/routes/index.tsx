@@ -10,6 +10,7 @@ import Compartimentos from "../pages/Compartimentos/Compartimentos.tsx";
 import SelectLocker from "../pages/Entrega/SelectLocker.tsx";
 import SelectCompartimento from "../pages/Entrega/SelectCompartimento.tsx";
 import ViewEntregas from "../pages/Entregas/viewEntregas.tsx";
+import Logs from "../pages/Logs/Logs.tsx";
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: "/entregas",
         element: <ViewEntregas />
+      },
+      {
+        path: "/logs",
+        element: <Logs />
       }
     ]
   }

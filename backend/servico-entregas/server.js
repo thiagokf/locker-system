@@ -27,7 +27,7 @@ db.run(`CREATE TABLE IF NOT EXISTS entregas (
 
 // get entregas
 app.get('/entregas', (req, res) => {
-    db.all(`SELECT * FROM entregas`, [], (err, result) => {
+    db.all(`SELECT * FROM entregas WHERE status = 'PENDENTE'`, [], (err, result) => {
         if (err) {
             res.status(500).json({ erro: 'erro ao buscar entregas' })
         } else {
@@ -41,21 +41,17 @@ app.post('/entregas/depositar', async (req, res) => {
     try {
         const { locker_id, compartimento_id, tamanho } = req.body;
         console.log(locker_id, compartimento_id, tamanho)
-        console.log("na api")
         
         if (!locker_id || !tamanho || !compartimento_id) {
-            console.log("erro aqui");
             return res.status(400).json({ erro: 'locker_id, compartimento_id e tamanho_pedido são obrigatórios' });
         }
 
         //gerar token de retirada (frufru)
         const tokenRetirada = Math.random().toString(36).substring(2, 6).toUpperCase();
-        console.log("gerou token")
 
         //response
         db.run(`INSERT INTO entregas (locker_id, compartimento_id, tamanho_pedido, codigo_retirada) VALUES (?, ?, ?, ?)`, [locker_id, compartimento_id, tamanho, tokenRetirada], async (err) => {
             if (err) {
-                console.log("erro 500")
                 res.status(500).json({ erro: 'erro ao registrar entrega' })
             } else {
                 //depositar entrega (patch no compartimento p/ ocupado)
@@ -69,7 +65,6 @@ app.post('/entregas/depositar', async (req, res) => {
     } catch (erro) {
         console.error('Erro em /entregas/depositar:', erro && (erro.message || erro));
         if (erro.response && erro.response.status === 404) {
-            console.log("deu esse erro aqui");
             console.log(erro.response);
             return res.status(404).json({ erro: "Dado não cadastrado" });
         }
@@ -86,18 +81,14 @@ app.post('/entregas/retirada/:codigo_retirada', (req, res) => {
         } else if (!row) {
             res.status(404).json({ erro: 'entrega não encontrada' })
         } else {
-            console.log(row)
             const { id, locker_id, compartimento_id } = row
-
+            console.log(id, locker_id, compartimento_id)
             const dados_comp = {
                 locker_id: locker_id,
                 compartimento_id: compartimento_id
             }
 
-            // notifica foi compartimento aberto
-            const abrir_comprtimento = await axios.post('http://localhost:3005/abrir-compartimento', dados_comp)
-
-            // liberar o compartimento (ocupado --> livre)
+            // liberar o compartimento (ocupado --> livre)  
             const liberar_compartimento = await axios.patch(`http://localhost:3002/locker/compartimento/${compartimento_id}/status`, {
                 status: 'LIVRE'
             });
