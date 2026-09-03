@@ -1,9 +1,3 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 .main {
   min-height: 100vh;
   display: flex;
@@ -11,54 +5,60 @@
   justify-content: center;
   flex-direction: column;
   padding: 24px;
-  background: #506380;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg-deep);
 }
 
 .header {
-  width: min(620px, 100%);
-  padding: 28px 32px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px 20px 0 0;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  width: min(480px, 100%);
+  padding: 32px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-bottom: 3px solid var(--accent);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   text-align: center;
 }
 
 .title {
-  font-size: 2.4rem;
+  font-size: 1.75rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.title::before {
+  content: '📦 ';
 }
 
 .body {
-  width: min(620px, 100%);
-  padding: 32px 24px;
-  background: rgba(248, 250, 252, 0.95);
-  border-radius: 0 0 20px 20px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16);
+  width: min(480px, 100%);
+  padding: 28px 24px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  box-shadow: var(--shadow);
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .option {
   width: 100%;
-  max-width: 320px;
-  padding: 14px 20px;
-  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
-  color: #fff;
-  text-decoration: none;
-  border-radius: 999px;
-  font-size: 1rem;
+  padding: 13px 20px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  font-size: 0.95rem;
   font-weight: 600;
   text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  letter-spacing: 0.01em;
 }
 
 .option:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(79, 70, 229, 0.35);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
 }

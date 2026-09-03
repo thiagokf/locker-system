@@ -18,6 +18,7 @@ var db = new sqlite3.Database('./entregas.db', (err) => {
 db.run(`CREATE TABLE IF NOT EXISTS entregas (
         id INTEGER PRIMARY KEY,
         locker_id INTEGER NOT NULL,
+        locker_loc TEXT NOT NULL,
         compartimento_id INTEGER NOT NULL,
         tamanho_pedido TEXT NOT NULL,
         codigo_retirada TEXT NOT NULL,
@@ -39,8 +40,9 @@ app.get('/entregas', (req, res) => {
 // post depositar entregas
 app.post('/entregas/depositar', async (req, res) => {
     try {
-        const { locker_id, compartimento_id, tamanho } = req.body;
+        const { locker_id, locker_loc, compartimento_id, tamanho } = req.body;
         
+        console.log(locker_id, locker_loc, compartimento_id, tamanho);
         if (!locker_id || !tamanho || !compartimento_id) {
             return res.status(400).json({ erro: 'locker_id, compartimento_id e tamanho_pedido são obrigatórios' });
         }
@@ -49,29 +51,32 @@ app.post('/entregas/depositar', async (req, res) => {
         const tokenRetirada = Math.random().toString(36).substring(2, 6).toUpperCase();
 
         //response
-        db.run(`INSERT INTO entregas (locker_id, compartimento_id, tamanho_pedido, codigo_retirada) VALUES (?, ?, ?, ?)`, [locker_id, compartimento_id, tamanho, tokenRetirada], async function (err) {
+        db.run(`INSERT INTO entregas (locker_id, locker_loc, compartimento_id, tamanho_pedido, codigo_retirada) VALUES (?, ?, ?, ?, ?)`, [locker_id, locker_loc, compartimento_id, tamanho, tokenRetirada], async function (err) {
             if (err) {
-                res.status(500).json({ erro: 'erro ao registrar entrega' })
+                console.error('Erro ao inserir entrega:', err && (err.message || err));
+                return res.status(500).json({ erro: 'erro ao registrar entrega' });
             }
 
             try {
                 // id inserido
                 const insertedId = this.lastID;
 
+                console.log('insertedId', insertedId)
                 // depositar entrega (patch no compartimento p/ ocupado)
                 await axios.patch(`http://localhost:3002/locker/compartimento/${compartimento_id}/status`, {
                     status: 'OCUPADO'
                 });
-
+                
                 // criar log
                 const dados_log = {
                     entrega_id: insertedId,
+                    locker_loc: locker_loc,
                     compartimento_id: compartimento_id,
                     acao: 'Entrega'
                 };
                 await axios.post(`http://localhost:3004/logs`, dados_log);
 
-                return res.status(200).send(`entrega registrada! codigo para retirada: ${tokenRetirada}`);
+                res.status(200).send(`entrega registrada! codigo para retirada: ${tokenRetirada}`);
             } catch (erroInterno) {
                 console.error('Erro ao completar pós-inserção:', erroInterno);
                 res.status(500).json({ erro: 'erro ao processar pós-inserção da entrega' });
@@ -97,7 +102,7 @@ app.post('/entregas/retirada/:codigo_retirada', (req, res) => {
         } else if (!row) {
             res.status(404).json({ erro: 'entrega não encontrada' })
         } else {
-            const { id, locker_id, compartimento_id } = row
+            const { id, locker_id, locker_loc, compartimento_id } = row
 
             const dados_comp = {
                 locker_id: locker_id,
@@ -112,6 +117,8 @@ app.post('/entregas/retirada/:codigo_retirada', (req, res) => {
             // criar log
             const dados_log = {
                 entrega_id: id,
+                locker_id: locker_id,
+                locker_loc: locker_loc,
                 compartimento_id: compartimento_id,
                 acao : 'Retirada'
             }

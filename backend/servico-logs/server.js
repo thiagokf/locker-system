@@ -18,6 +18,7 @@ var db = new sqlite3.Database('./logs.db', (err) => {
 db.run(`CREATE TABLE IF NOT EXISTS logs_entregas (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         entrega_id INTEGER NOT NULL,
+        locker_loc TEXT NOT NULL,
         compartimento_id INTEGER NOT NULL,
         data_registro TEXT NOT NULL,
         acao TEXT NOT NULL
@@ -29,10 +30,10 @@ db.run(`CREATE TABLE IF NOT EXISTS logs_entregas (
 
 // post do log
 app.post('/logs', (req, res) => {
-    const { entrega_id, compartimento_id, acao } = req.body
+    const { entrega_id, locker_loc, compartimento_id, acao } = req.body
     console.log(entrega_id, compartimento_id, acao);
     
-    db.run(`INSERT INTO logs_entregas (entrega_id, compartimento_id, data_registro, acao) VALUES (?, ?, ?, ?)`, [entrega_id, compartimento_id, new Date().toISOString(), acao], (err) => {
+    db.run(`INSERT INTO logs_entregas (entrega_id, locker_loc, compartimento_id, data_registro, acao) VALUES (?, ?, ?, ?, ?)`, [entrega_id, locker_loc, compartimento_id, new Date().toISOString(), acao], (err) => {
         if (err) {
             console.log(err)
             res.status(500).json({ 'erro': 'erro ao regisrtar log da entrega' });

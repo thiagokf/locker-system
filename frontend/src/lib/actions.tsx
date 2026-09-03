@@ -1,4 +1,4 @@
-import axios, { AxiosError, isAxiosError } from 'axios';
+import axios from 'axios';
 import api from "../service/api";
 import type { LockerProps } from "../types/locker";
 import type { CompartimentoProps } from "../types/compartimento";
@@ -169,6 +169,7 @@ export async function postEntrega(new_entrega: EntregaProps) {
 
     const dados = {
         locker_id: new_entrega.locker_id,
+        locker_loc: new_entrega.locker_loc,
         compartimento_id: new_entrega.compartimento_id,
         tamanho: new_entrega.tamanho_pedido
     }

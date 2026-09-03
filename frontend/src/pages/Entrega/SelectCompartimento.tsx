@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { getCompStatus } from "../../lib/actions";
 import { postEntrega } from "../../lib/actions";
 import type { CompartimentoProps } from "../../types/compartimento";
@@ -9,10 +9,11 @@ import classes from './SelectCompartimento.module.css';
 
 const SelectCompartimento = () => {
   const [comps, setComps] = useState<CompartimentoProps[]>([]);
-  const { id, status, tamanho } = useParams<{ id: string; status: string; tamanho: string }>();
+  const navigate = useNavigate();
+  const { id, loc, tamanho } = useParams<{ id: string; loc: string; tamanho: string }>();
 
   const pegaComps = async () => {
-    if (!id || !status || !tamanho) {
+    if (!id || !loc || !tamanho) {
       return;
     }
 
@@ -22,17 +23,18 @@ const SelectCompartimento = () => {
   
   useEffect(() => {
     pegaComps();
-  }, [id, status]);
+  }, [id, loc]);
 
   const fazerEntrega = async (comp?: CompartimentoProps) => {
     let new_entrega = {} as EntregaProps;
 
-    if (!comp || !tamanho) {
+    if (!comp || !tamanho || !loc) {
       console.log("valores faltando");
       return "error";
     }
 
     new_entrega.locker_id = comp.locker_id;
+    new_entrega.locker_loc = loc
     new_entrega.compartimento_id = comp.id;
     new_entrega.tamanho_pedido = tamanho;
 
@@ -43,12 +45,9 @@ const SelectCompartimento = () => {
           console.log("Erro ao fazer post da entrega");
           return "error";
         }
-        console.log(res);
-        console.log(res.data);
-        console.log(res.data.message)
         window.alert(res.data);
         pegaComps();
-        return "Deu boa";
+        navigate(`/`);
     }
   };
 

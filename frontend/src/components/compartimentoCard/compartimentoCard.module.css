@@ -1,108 +1,69 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 .card {
   width: 100%;
-  max-width: 520px;
-  padding: 20px;
-  background: #fff;
-  border-radius: 18px;
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+  padding: 16px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
+  transition: border-color 0.15s;
+}
+
+.card:hover {
+  border-color: var(--border-light);
 }
 
 .content {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 14px;
 }
 
 .info {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
 }
 
 .id {
-  font-size: 1.15rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .localizacao,
-.tamanho,
-.status {
-  color: #475569;
-  font-size: 0.98rem;
+.tamanho {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
 }
 
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+.status {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--green);
 }
 
 .button {
-  padding: 10px 16px;
-  border-radius: 999px;
-  border: none;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-  text-decoration: none;
-}
-
-.button:hover {
-  transform: translateY(-1px);
-}
-
-.view {
-  background: #eef2ff;
-  color: #4338ca;
-}
-
-.add {
-  background: #ede9fe;
-  color: #7c3aed;
-}
-
-.delete {
-  background: #fee2e2;
-  color: #b91c1c;
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-size: 0.85rem;
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  font-size: 0.8rem;
   font-weight: 700;
-  min-width: 72px;
-  text-align: center;
-  border: 1px solid rgba(185, 28, 28, 0.12);
-  height: 40px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  background: transparent;
+  color: var(--red);
+  white-space: nowrap;
 }
 
 .delete:hover {
-  box-shadow: 0 8px 20px rgba(185, 28, 28, 0.12);
-  opacity: 0.98;
+  background: var(--red-bg);
+  border-color: var(--red);
 }
 
 .button:focus {
-  outline: 3px solid rgba(99, 102, 241, 0.12);
+  outline: 2px solid rgba(245, 158, 11, 0.4);
   outline-offset: 2px;
-}
-
-@media (max-width: 520px) {
-  .card {
-    padding: 18px;
-  }
-
-  .actions {
-    flex-direction: column;
-  }
 }

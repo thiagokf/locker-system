@@ -31,23 +31,29 @@ console.log(logs);
           <ul className={styles.list}>
             {logs.map((log) => (
               <li key={log.id} className={styles.item}>
-                <div className={styles.row}>
-                  <span className={styles.label}>ID:</span>
-                  <span className={styles.value}>{log.id}</span>
+                <div className={styles.cardTop}>
+                  <span className={styles.logId}>#{log.id}</span>
+                  <span className={`${styles.acaoBadge} ${log.acao === 'Entrega' ? styles.acaoEntrega : styles.acaoRetirada}`}>
+                    {log.acao}
+                  </span>
                 </div>
-                <div className={styles.row}>
-                  <span className={styles.label}>Entrega:</span>
-                  <span className={styles.value}>{log.entrega_id}</span>
+                <div className={styles.cardBody}>
+                  <div className={styles.field}>
+                    <span className={styles.label}>Entrega</span>
+                    <span className={styles.value}>#{log.entrega_id}</span>
+                  </div>
+                  <div className={styles.field}>
+                    <span className={styles.label}>Locker</span>
+                    <span className={styles.value}>{log.locker_loc}</span>
+                  </div>
+                  <div className={styles.field}>
+                    <span className={styles.label}>Compartimento</span>
+                    <span className={styles.value}>#{log.compartimento_id}</span>
+                  </div>
                 </div>
-                <div className={styles.row}>
-                  <span className={styles.label}>ação:</span>
-                  <span className={styles.value}>{log.acao}</span>
+                <div className={styles.time}>
+                  {log.data_registro ? new Date(log.data_registro).toLocaleString('pt-BR') : '—'}
                 </div>
-                <div className={styles.row}>
-                  <span className={styles.label}>Compartimento:</span>
-                  <span className={styles.compartment}>{log.compartimento_id}</span>
-                </div>
-                <div className={styles.time}>{log.data_registro ? new Date(log.data_registro).toLocaleString() : ''}</div>
               </li>
             ))}
           </ul>

@@ -9,7 +9,7 @@ const SelectLocker = () => {
   const [lockers, setLockers] = useState<LockerProps[]>([]);
   const navigate = useNavigate();
 
-  const handleSelectLocker = (lockerId: number) => {
+  const handleSelectLocker = (lockerId: number, lockerLoc: string) => {
     const valor = window.prompt('Qual o tamanho da entrega? (P,M,G ou XG)');
 
     if (!valor) {
@@ -29,7 +29,7 @@ const SelectLocker = () => {
       return;
     }
 
-    navigate(`/entrega/selectCompartimento/${lockerId}/${tamanhoSelecionado}/LIVRE`);
+    navigate(`/entrega/selectCompartimento/${lockerId}/${lockerLoc}/${tamanhoSelecionado}`);
   };
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const SelectLocker = () => {
                 key={lock.id}
                 type="button"
                 className={classes.cardButton}
-                onClick={() => handleSelectLocker(lock.id)}
+                onClick={() => handleSelectLocker(lock.id, lock.localizacao)}
               >
                 <span className={classes.label}>Locker</span>
                 <p className={classes.lockerId}>#{lock.id}</p>

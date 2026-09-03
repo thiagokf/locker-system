@@ -42,7 +42,7 @@ const router = createBrowserRouter([
         element: <SelectLocker />
       },
       {
-        path: "/entrega/selectCompartimento/:id/:tamanho/:status",
+        path: "/entrega/selectCompartimento/:id/:loc/:tamanho",
         element: <SelectCompartimento />
       },
       {
