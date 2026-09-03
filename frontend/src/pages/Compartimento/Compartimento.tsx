@@ -29,7 +29,7 @@ const Compartimento = () => {
             const res = await postCompartimento(new_compartimento);
 
             setSucess(true);
-            setMessage(String(res?.data ?? ""));
+            setMessage(String(res?.data.message ?? ""));
             if (tamanho.current) tamanho.current.value = "";
 
         } catch (err: any) {

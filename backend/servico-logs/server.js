@@ -19,7 +19,8 @@ db.run(`CREATE TABLE IF NOT EXISTS logs_entregas (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         entrega_id INTEGER NOT NULL,
         compartimento_id INTEGER NOT NULL,
-        data_registro TEXT NOT NULL 
+        data_registro TEXT NOT NULL,
+        acao TEXT NOT NULL
     )`,
     [], (err) => {
         if (err) console.log('Erro ao criar tabela de logs:', err);
@@ -28,12 +29,11 @@ db.run(`CREATE TABLE IF NOT EXISTS logs_entregas (
 
 // post do log
 app.post('/logs', (req, res) => {
-    const { entrega_id, compartimento_id } = req.body
-    console.log(entrega_id, compartimento_id);
+    const { entrega_id, compartimento_id, acao } = req.body
+    console.log(entrega_id, compartimento_id, acao);
     
-    db.run(`INSERT INTO logs_entregas (entrega_id, compartimento_id, data_registro) VALUES (?, ?, ?)`, [entrega_id, compartimento_id, new Date().toISOString()], (err) => {
+    db.run(`INSERT INTO logs_entregas (entrega_id, compartimento_id, data_registro, acao) VALUES (?, ?, ?, ?)`, [entrega_id, compartimento_id, new Date().toISOString(), acao], (err) => {
         if (err) {
-            console.log(compartimento_id)
             console.log(err)
             res.status(500).json({ 'erro': 'erro ao regisrtar log da entrega' });
         } else {
@@ -46,9 +46,7 @@ app.post('/logs', (req, res) => {
 app.get('/logs', (req, res) => {
     db.all(`SELECT * FROM logs_entregas`, [], (err, result) => {
         if (err) {
-            res.status(500).json({ 'erro': 'erro ao pegar dados dos logs de entrega' });
-        } else if (!result) {
-            res.status(404).json({ 'message': 'Nenhum log foi registrado' })
+            res.status(500).send('erro ao obter logs');
         } else {
             res.status(200).json(result)
         }

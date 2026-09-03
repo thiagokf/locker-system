@@ -22,6 +22,7 @@ const Lockers = () => {
     const handleDeleteLocker = (id: number) => {
         setLockers(lockers.filter(lock => lock.id !== id));
     }
+    
   return (
     <>
     <div className={classes.main}>

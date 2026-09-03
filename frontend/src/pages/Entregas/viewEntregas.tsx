@@ -37,9 +37,6 @@ const viewEntregas = () => {
     pegaEntregas();
 }, []);
 
-entregas.map((entrega) => (
-    console.log(entrega.tamanho_pedido)
-))
   return (
     <main className={classes.main}>
       <div className={classes.header}>
@@ -63,7 +60,7 @@ entregas.map((entrega) => (
                   <p><span className={classes.label}>Locker:</span> {entrega.locker_id}</p>
                   <p><span className={classes.label}>Compartimento:</span> {entrega.compartimento_id}</p>
                   <p><span className={classes.label}>Tamanho:</span> {entrega.tamanho_pedido}</p>
-                  <p><span className={classes.label}>Tamanho:</span> {entrega.codigo_retirada}</p>
+                  <p><span className={classes.label}>Senha:</span> {entrega.codigo_retirada}</p>
                 </div>
                 <button onClick={() => handleRetirar(entrega)}> Retirar Pedido </button>
               </article>

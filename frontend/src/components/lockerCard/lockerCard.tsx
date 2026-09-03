@@ -12,7 +12,7 @@ const LockerCard = ({id, localizacao, onDelete}: LockerCardProps) => {
     if (window.confirm(`Tem certeza que deseja deletar o locker "${localizacao}"?`)) {
       try {
         const response = await deleteLocker(id);
-        if (response?.status === 200 || response?.status === 204) {
+        if (response?.status === 200) {
           onDelete?.(id);
         } else if (response?.status == 400) {
           alert('Locker possui compartimento ocupado');
@@ -23,7 +23,7 @@ const LockerCard = ({id, localizacao, onDelete}: LockerCardProps) => {
         }
       } catch (error) {
         console.error('Erro ao deletar:', error);
-        alert('Erro ao deletar lockeraaa');
+        alert('Erro ao deletar locker');
       }
     }
   }

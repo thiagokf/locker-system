@@ -77,10 +77,24 @@
 .delete {
   background: #fee2e2;
   color: #b91c1c;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  min-width: 72px;
+  text-align: center;
+  border: 1px solid rgba(185, 28, 28, 0.12);
+  height: 40px;
 }
 
-button.delete {
-  border: 1px solid rgba(185, 28, 28, 0.15);
+.delete:hover {
+  box-shadow: 0 8px 20px rgba(185, 28, 28, 0.12);
+  opacity: 0.98;
+}
+
+.button:focus {
+  outline: 3px solid rgba(99, 102, 241, 0.12);
+  outline-offset: 2px;
 }
 
 @media (max-width: 520px) {

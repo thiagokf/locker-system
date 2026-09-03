@@ -75,13 +75,13 @@ app.get('/locker', (req, res, next) => {
 });
 
 // delete locker
-app.delete('/locker/:id', (req,res) => {
+app.delete('/locker/:id', (req, res) => {
     const { id } = req.params;
     console.log('na funcao delete')
     db.get(`SELECT * FROM lockers l 
         JOIN compartimentos c 
             ON l.id = c.locker_id 
-        WHERE c.status = 'OCUPADO' AND l.id = ?`, [id], (err, result) => {        
+        WHERE c.status = 'OCUPADO' AND l.id = ?`, [id], (err, result) => {
         if (err) {
             res.status(500).send('Erro no servidor 1')
         } else if (result) {
@@ -89,7 +89,7 @@ app.delete('/locker/:id', (req,res) => {
             res.status(400).send('O locker escolhido possui compartimento ocupado');
         } else {
             console.log("nenhum compartimento ocupado")
-            db.run(`DELETE CASCADE FROM lockers WHERE id = ?`, [id], (err) => {
+            db.run(`DELETE FROM lockers WHERE id = ?`, [id], (err) => {
                 if (err) {
                     console.log(err)
                     res.status(500).send('Erro no servidor2')
@@ -148,11 +148,42 @@ app.get('/locker/compartimento', (req, res) => {
     });
 });
 
+// delete comparimento
+app.delete('/locker/compartimento/:id', (req, res) => {
+    const { id } = req.params;
+
+
+    // Ver se compartimento esta livre ou não
+    db.get(`SELECT * FROM compartimentos WHERE id = ?`, [id], (err, result) => {
+        if (err) {
+            console.log(err)
+            res.status(500).send("Erro no servidor ao deletar locker");
+        } else if (!result) {
+            res.status(400).send("o Compartimento não existe");
+        }
+        else {
+            console.log(result)
+            if (result.status === 'OCUPADO') {
+                res.status(404).send("O compartimento está ocupado")
+            }
+            else {
+                db.run(`DELETE FROM compartimentos WHERE id = ?`, [id], (err) => {
+                    if (err) {
+                        console.log(err)
+                        res.status(500).send("Erro no servidor ao deletar locker");
+                    }
+                    else {
+                        res.status(200).send("Compartimento excluido com sucesso");
+                    }
+                })
+            }
+        }
+    });
+});
+
 // get compartimentos por locker id
 app.get('/locker/compartimento/:locker_id', (req, res) => {
     const { locker_id } = req.params;
-
-    console.log(locker_id);
 
     db.all(`SELECT * FROM compartimentos WHERE locker_id = ?`, [locker_id], (err, result) => {
         if (err) {
@@ -167,37 +198,14 @@ app.get('/locker/compartimento/:locker_id', (req, res) => {
     })
 })
 
-// get compartimento por status
-app.get('/locker/compartimento/:locker_id/status/:status', (req, res) => {
-    const { locker_id, status } = req.params;
-
-    console.log(locker_id, status)
-    if (!locker_id || !status){
-        res.status(500).send("Precisa de locker id e status");
-    }
-
-    db.all(`SELECT * FROM compartimentos 
-            WHERE locker_id = ? AND status = ?`, [locker_id, status.toUpperCase()], (err, result) => {
-        if (err) {
-            console.log("erro1")
-            res.status(500).json({ 'erro': 'erro ao obter compartimentos' })
-        } else if (!result) {
-            console.log("erro2")
-            res.status(404).send('Sem compartimentos livres..')
-        } else {
-            res.status(200).json(result)
-        }
-    })
-})
-
 // get compartimento por id
 app.get('/locker/compartimento/:id', (req, res) => {
     const { id } = req.params;
 
     db.get(`SELECT * FROM compartimentos WHERE id = ?`, [id], (err, result) => {
-        if (err){
+        if (err) {
             res.status(500).json({ 'erro': 'erro ao obter compartimento' })
-        } else if (!result){
+        } else if (!result) {
             res.status(404).json({ 'message': 'Nenhum compartimento com esse id foi enconrtado' })
         } else {
             res.status(200).json(result)
@@ -209,14 +217,14 @@ app.get('/locker/compartimento/:id', (req, res) => {
 app.patch('/locker/compartimento/:id/status', (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
-    
-    db.run(`UPDATE compartimentos SET status = ? WHERE id = ?`, [status, id], function(err) {
+
+    db.run(`UPDATE compartimentos SET status = ? WHERE id = ?`, [status, id], function (err) {
         if (err) {
             res.status(500).json({ erro: 'erro ao atualizar status' })
         } else if (this.changes == 0) {
-            res.status(404).json({ erro: 'id não encontrado'})
+            res.status(404).json({ erro: 'id não encontrado' })
         } else {
-            res.status(200).json({message: 'status do compartimento alterado'})
+            res.status(200).json({ message: 'status do compartimento alterado' })
         }
     });
 });
@@ -226,7 +234,7 @@ app.get('/locker/compartimento/:id/:tamanho', (req, res) => {
     const { id, tamanho } = req.params;
     const tamanhoNormalizado = String(tamanho).toUpperCase();
 
-    db.all(`SELECT * FROM compartimentos WHERE tamanho = ? AND locker_id = ? AND status = "LIVRE" ORDER BY id`, [tamanhoNormalizado, id], function(err, result) {
+    db.all(`SELECT * FROM compartimentos WHERE tamanho = ? AND locker_id = ? AND status = "LIVRE" ORDER BY id`, [tamanhoNormalizado, id], function (err, result) {
         if (err) {
             console.log(err);
             return res.status(500).json({ erro: 'erro no servidor' });

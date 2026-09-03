@@ -1,11 +1,11 @@
-import axios from 'axios';
+import axios, { AxiosError, isAxiosError } from 'axios';
 import api from "../service/api";
 import type { LockerProps } from "../types/locker";
 import type { CompartimentoProps } from "../types/compartimento";
 import type { EntregaProps } from "../types/entrega";
+import type { LogsProps } from '../types/logs';
 
 export async function postLocker(new_locker: LockerProps) {
-    console.log("Entrou no metodo")
     const dados = {
         localizacao: new_locker.localizacao,
     };
@@ -24,6 +24,7 @@ export async function postLocker(new_locker: LockerProps) {
 export async function getLockers(): Promise<LockerProps[]> {
     try {
         const response = await api.get('/locker');
+        
         if (!response) {
             console.log("nenhum locker adicionado")
             return []
@@ -39,10 +40,8 @@ export async function getLockers(): Promise<LockerProps[]> {
 
 export async function deleteLocker(id: number) {
     try {
-        console.log('netrou no try')
         const response = await api.delete(`/locker/${id}`);
 
-        console.log(response.data);
         return response;
     } catch (error) {
         console.error('Erro ao deletar locker:', error);
@@ -67,11 +66,9 @@ export async function postCompartimento(new_comp: CompartimentoProps) {
         tamanho: new_comp.tamanho
     }
 
-    console.log(dados.locker_id);
     try {
         const res = await api.post(`/locker/compartimento/${dados.locker_id}`, dados);
 
-        console.log(res);
         return res
     } catch (error) {
         console.error("Erro ao alocar compartimento ", error);
@@ -88,7 +85,6 @@ export async function postCompartimento(new_comp: CompartimentoProps) {
 
 export async function getCompartimentos(locker_id: string) {
     try {
-        console.log("entrou no get: indo pra api")
         const res = await api.get(`/locker/compartimento/${locker_id}`)
         if (!res) {
             console.log("nenhum compartimento alocado")
@@ -108,12 +104,10 @@ export async function getCompartimentos(locker_id: string) {
     }
 }
 
-export async function getCompStatus(locker_id: string, status: string, tamanho: string) {
+export async function getCompStatus(locker_id: string, tamanho: string) {
     try {
-        console.log("no metodo")
         const res = await api.get(`/locker/compartimento/${locker_id}/${tamanho}`)
 
-        console.log(res)
         if (!res) {
             console.log("nenhum compartimento disponivel");
             return [];
@@ -128,6 +122,28 @@ export async function getCompStatus(locker_id: string, status: string, tamanho: 
                 data: error.response.data
             }
             return res.data
+        }
+    }
+}
+
+export async function deleteComp(id: number) {
+    try {
+        console.log(id);
+        const res = await api.delete(`/locker/compartimento/${id}`);
+        console.log(res);
+        return res
+    }
+    catch (error){
+        console.error("Erro ao deletar compartimento: " + error);
+
+        if (axios.isAxiosError(error) && error.response) {
+            const res = {
+                status: error.response.status,
+                data: error.response.data
+            }
+            console.log("catch!");
+
+            return res
         }
     }
 }
@@ -159,7 +175,7 @@ export async function postEntrega(new_entrega: EntregaProps) {
     try {
         console.log("entrou no try")
         const res = await api.post('/entregas/depositar', dados)
-
+        console.log(res.data.message);
         return res
     }
     catch (error) {
@@ -188,5 +204,18 @@ export async function retirarEntrega(codigo_retirada: string) {
             }
             return res.data
         }
+    }
+}
+
+export async function getLogs(): Promise<LogsProps[]>{
+    try {
+        const res = await api.get('/logs');
+        
+        console.log(res.data)
+        return res.data
+    }
+    catch (error) {
+        console.error("erro ao pegar logs: ", error)
+        return [];
     }
 }

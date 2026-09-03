@@ -16,17 +16,13 @@ const SelectCompartimento = () => {
       return;
     }
 
-    const dados = await getCompStatus(id, status, tamanho);
+    const dados = await getCompStatus(id, tamanho);
     setComps(dados);
-    console.log("dados")
-    console.log(dados)
   };
   
   useEffect(() => {
     pegaComps();
   }, [id, status]);
-  console.log("comps")
-  console.log(comps)
 
   const fazerEntrega = async (comp?: CompartimentoProps) => {
     let new_entrega = {} as EntregaProps;
@@ -40,15 +36,20 @@ const SelectCompartimento = () => {
     new_entrega.compartimento_id = comp.id;
     new_entrega.tamanho_pedido = tamanho;
 
-    const res = await postEntrega(new_entrega);
-
-    if (!res) {
-      console.log("Erro ao fazer post da entrega");
-      return "error";
+    if (window.confirm("confirmar entrega? ")){
+        const res = await postEntrega(new_entrega);
+        console.log(res)
+        if (!res) {
+          console.log("Erro ao fazer post da entrega");
+          return "error";
+        }
+        console.log(res);
+        console.log(res.data);
+        console.log(res.data.message)
+        window.alert(res.data);
+        pegaComps();
+        return "Deu boa";
     }
-    console.log("deu boa");
-    pegaComps();
-    return "Deu boa";
   };
 
   return (

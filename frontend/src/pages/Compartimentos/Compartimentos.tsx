@@ -18,17 +18,21 @@ const Compartimentos = () => {
         loadComps()
     }, [id])
 
+    const handleDeleteComp = (id: number) => {
+        setComps(comps.filter(comps => comps.id !== id));
+    }
+
     return (
         <div className={classes.main}>
             <div className={classes.header}>
-                <h1 className={classes.title}>Compartimentos Locker {localizacao}</h1>
+                <h1 className={classes.title}>Compartimentos compser {localizacao}</h1>
                 <Link className={classes.backButton} to='/lockers'>← Voltar</Link>
             </div>
             <div className={classes.body}>
                 {comps?.length > 0 ? (
                     <div className={classes.grid}>
                         {comps.map((comp) => (
-                            <CompartimentoCard key={comp.id} {...comp}/>
+                            <CompartimentoCard key={comp.id} {...comp} onDelete={handleDeleteComp}/>
                         ))}
                     </div>
                 ) : (

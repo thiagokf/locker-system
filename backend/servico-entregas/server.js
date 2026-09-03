@@ -40,7 +40,6 @@ app.get('/entregas', (req, res) => {
 app.post('/entregas/depositar', async (req, res) => {
     try {
         const { locker_id, compartimento_id, tamanho } = req.body;
-        console.log(locker_id, compartimento_id, tamanho)
         
         if (!locker_id || !tamanho || !compartimento_id) {
             return res.status(400).json({ erro: 'locker_id, compartimento_id e tamanho_pedido são obrigatórios' });
@@ -50,15 +49,32 @@ app.post('/entregas/depositar', async (req, res) => {
         const tokenRetirada = Math.random().toString(36).substring(2, 6).toUpperCase();
 
         //response
-        db.run(`INSERT INTO entregas (locker_id, compartimento_id, tamanho_pedido, codigo_retirada) VALUES (?, ?, ?, ?)`, [locker_id, compartimento_id, tamanho, tokenRetirada], async (err) => {
+        db.run(`INSERT INTO entregas (locker_id, compartimento_id, tamanho_pedido, codigo_retirada) VALUES (?, ?, ?, ?)`, [locker_id, compartimento_id, tamanho, tokenRetirada], async function (err) {
             if (err) {
                 res.status(500).json({ erro: 'erro ao registrar entrega' })
-            } else {
-                //depositar entrega (patch no compartimento p/ ocupado)
-                const depositar = await axios.patch(`http://localhost:3002/locker/compartimento/${compartimento_id}/status`, {
+            }
+
+            try {
+                // id inserido
+                const insertedId = this.lastID;
+
+                // depositar entrega (patch no compartimento p/ ocupado)
+                await axios.patch(`http://localhost:3002/locker/compartimento/${compartimento_id}/status`, {
                     status: 'OCUPADO'
-                })
-                res.status(200).json({ message: `entrega registrada! codigo para retirada: ${tokenRetirada}` })
+                });
+
+                // criar log
+                const dados_log = {
+                    entrega_id: insertedId,
+                    compartimento_id: compartimento_id,
+                    acao: 'Entrega'
+                };
+                await axios.post(`http://localhost:3004/logs`, dados_log);
+
+                return res.status(200).send(`entrega registrada! codigo para retirada: ${tokenRetirada}`);
+            } catch (erroInterno) {
+                console.error('Erro ao completar pós-inserção:', erroInterno);
+                res.status(500).json({ erro: 'erro ao processar pós-inserção da entrega' });
             }
         });
 
@@ -66,9 +82,9 @@ app.post('/entregas/depositar', async (req, res) => {
         console.error('Erro em /entregas/depositar:', erro && (erro.message || erro));
         if (erro.response && erro.response.status === 404) {
             console.log(erro.response);
-            return res.status(404).json({ erro: "Dado não cadastrado" });
+            res.status(404).json({ erro: "Dado não cadastrado" });
         }
-        return res.status(500).json({ erro: "Serviço fora do ar." });
+        res.status(500).json({ erro: "Serviço fora do ar." });
     }
 })
 
@@ -82,7 +98,7 @@ app.post('/entregas/retirada/:codigo_retirada', (req, res) => {
             res.status(404).json({ erro: 'entrega não encontrada' })
         } else {
             const { id, locker_id, compartimento_id } = row
-            console.log(id, locker_id, compartimento_id)
+
             const dados_comp = {
                 locker_id: locker_id,
                 compartimento_id: compartimento_id
@@ -96,9 +112,10 @@ app.post('/entregas/retirada/:codigo_retirada', (req, res) => {
             // criar log
             const dados_log = {
                 entrega_id: id,
-                compartimento_id: compartimento_id
+                compartimento_id: compartimento_id,
+                acao : 'Retirada'
             }
-            const log = await axios.post(`http://localhost:3004/logs`, dados_log)
+            const log = await axios.post(`http://localhost:3004/logs`, dados_log);
 
             // atualizar status da entrega
             db.run(`UPDATE entregas SET status = 'RETIRADA' WHERE id = ?`, [id], (err) => {

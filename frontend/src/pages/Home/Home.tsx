@@ -13,6 +13,7 @@ const Home = () => {
         <Link className={classes.option} to="/lockers">Visualizar Lockers</Link>
         <Link className={classes.option} to="/entrega/selectLocker">Fazer entrega</Link>
         <Link className={classes.option} to="/entregas">Ver entregas</Link>
+        <Link className={classes.option} to="/logs">Ver Logs</Link>
       </div>
     </div>
     </>
