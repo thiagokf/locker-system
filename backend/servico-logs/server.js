@@ -31,11 +31,10 @@ db.run(`CREATE TABLE IF NOT EXISTS logs_entregas (
 // post do log
 app.post('/logs', (req, res) => {
     const { entrega_id, locker_loc, compartimento_id, acao } = req.body
-    console.log(entrega_id, compartimento_id, acao);
-    
+
+
     db.run(`INSERT INTO logs_entregas (entrega_id, locker_loc, compartimento_id, data_registro, acao) VALUES (?, ?, ?, ?, ?)`, [entrega_id, locker_loc, compartimento_id, new Date().toISOString(), acao], (err) => {
         if (err) {
-            console.log(err)
             res.status(500).json({ 'erro': 'erro ao regisrtar log da entrega' });
         } else {
             res.status(200).json({ 'message': 'Log registrado!' })
@@ -50,6 +49,26 @@ app.get('/logs', (req, res) => {
             res.status(500).send('erro ao obter logs');
         } else {
             res.status(200).json(result)
+        }
+    });
+});
+
+// get logs por data (formato: DD-MM-YYYY)
+app.get('/logs/:day', (req, res) => {
+    const paramDay = req.params.day;
+    // paramDay vem como DD-MM-YYYY, converter para YYYY-MM-DD para comparar com ISO
+    const parts = paramDay.split('-');
+    if (parts.length !== 3) {
+        return res.status(400).json({ erro: 'formato de data inválido, use DD-MM-YYYY' });
+    }
+    const [dd, mm, yyyy] = parts;
+    const datePrefix = `${yyyy}-${mm}-${dd}`;
+
+    db.all(`SELECT * FROM logs_entregas WHERE data_registro LIKE ?`, [`${datePrefix}%`], (err, result) => {
+        if (err) {
+            res.status(500).send('erro ao obter logs');
+        } else {
+            res.status(200).json(result);
         }
     });
 });

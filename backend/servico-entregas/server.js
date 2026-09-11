@@ -41,8 +41,7 @@ app.get('/entregas', (req, res) => {
 app.post('/entregas/depositar', async (req, res) => {
     try {
         const { locker_id, locker_loc, compartimento_id, tamanho } = req.body;
-        
-        console.log(locker_id, locker_loc, compartimento_id, tamanho);
+
         if (!locker_id || !tamanho || !compartimento_id) {
             return res.status(400).json({ erro: 'locker_id, compartimento_id e tamanho_pedido são obrigatórios' });
         }
@@ -61,9 +60,10 @@ app.post('/entregas/depositar', async (req, res) => {
                 // id inserido
                 const insertedId = this.lastID;
 
-                console.log('insertedId', insertedId)
+                const lockerBaseUrl = process.env.SERVICO_LOCKER_URL || 'http://localhost:3002';
+
                 // depositar entrega (patch no compartimento p/ ocupado)
-                await axios.patch(`http://localhost:3002/locker/compartimento/${compartimento_id}/status`, {
+                await axios.patch(`${lockerBaseUrl}/locker/compartimento/${compartimento_id}/status`, {
                     status: 'OCUPADO'
                 });
                 
@@ -74,7 +74,9 @@ app.post('/entregas/depositar', async (req, res) => {
                     compartimento_id: compartimento_id,
                     acao: 'Entrega'
                 };
-                await axios.post(`http://localhost:3004/logs`, dados_log);
+
+                const logsBaseUrl = process.env.SERVICO_LOGS_URL || 'http://localhost:3004';
+                await axios.post(`${logsBaseUrl}/logs`, dados_log);
 
                 res.status(200).send(`entrega registrada! codigo para retirada: ${tokenRetirada}`);
             } catch (erroInterno) {
@@ -86,7 +88,6 @@ app.post('/entregas/depositar', async (req, res) => {
     } catch (erro) {
         console.error('Erro em /entregas/depositar:', erro && (erro.message || erro));
         if (erro.response && erro.response.status === 404) {
-            console.log(erro.response);
             res.status(404).json({ erro: "Dado não cadastrado" });
         }
         res.status(500).json({ erro: "Serviço fora do ar." });
@@ -109,8 +110,9 @@ app.post('/entregas/retirada/:codigo_retirada', (req, res) => {
                 compartimento_id: compartimento_id
             }
 
+            const lockerBaseUrl = process.env.SERVICO_LOCKER_URL || 'http://localhost:3002';
             // liberar o compartimento (ocupado --> livre)  
-            const liberar_compartimento = await axios.patch(`http://localhost:3002/locker/compartimento/${compartimento_id}/status`, {
+            const liberar_compartimento = await axios.patch(`${lockerBaseUrl}/locker/compartimento/${compartimento_id}/status`, {
                 status: 'LIVRE'
             });
 
@@ -120,10 +122,10 @@ app.post('/entregas/retirada/:codigo_retirada', (req, res) => {
                 locker_id: locker_id,
                 locker_loc: locker_loc,
                 compartimento_id: compartimento_id,
-                acao : 'Retirada'
+                acao: 'Retirada'
             }
-            const log = await axios.post(`http://localhost:3004/logs`, dados_log);
-
+            const logsBaseUrl = process.env.SERVICO_LOGS_URL || 'http://localhost:3004';
+            await axios.post(`${logsBaseUrl}/logs`, dados_log);
             // atualizar status da entrega
             db.run(`UPDATE entregas SET status = 'RETIRADA' WHERE id = ?`, [id], (err) => {
                 if (err) {

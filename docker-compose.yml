@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - api-gateway
+
+  api-gateway:
+    build: ./backend/api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - SERVICO_LOCKER_URL=http://servico-locker:3002
+      - SERVICO_ENTREGAS_URL=http://servico-entregas:3003
+      - SERVICO_LOGS_URL=http://servico-logs:3004
+    depends_on:
+      - servico-locker
+      - servico-entregas
+      - servico-logs
+
+  servico-locker:
+    build: ./backend/servico-locker
+    expose:
+      - "3002"
+
+  servico-entregas:
+    build: ./backend/servico-entregas
+    expose:
+      - "3003"
+    environment:
+      - SERVICO_LOCKER_URL=http://servico-locker:3002
+      - SERVICO_LOGS_URL=http://servico-logs:3004
+
+  servico-logs:
+    build: ./backend/servico-logs
+    expose:
+      - "3004"

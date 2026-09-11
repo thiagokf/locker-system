@@ -52,10 +52,8 @@ app.post('/locker', (req, res) => {
     db.run(`INSERT INTO lockers (localizacao) VALUES (?)`,
         [localizacao], (err) => {
             if (err) {
-                console.log(err)
                 res.status(500).json({ 'erro': 'Erro ao cadastrar locker' })
             } else {
-                console.log('Locker cadastrado com sucesso!');
                 res.status(200).send('Locker cadastrado com sucesso!');
             }
         }
@@ -66,7 +64,6 @@ app.post('/locker', (req, res) => {
 app.get('/locker', (req, res, next) => {
     db.all(`SELECT * FROM lockers`, [], (err, result) => {
         if (err) {
-            console.log("Erro: " + err);
             res.status(500).send('Erro ao obter dados.');
         } else {
             res.status(200).json(result);
@@ -77,22 +74,19 @@ app.get('/locker', (req, res, next) => {
 // delete locker
 app.delete('/locker/:id', (req, res) => {
     const { id } = req.params;
-    console.log('na funcao delete')
     db.get(`SELECT * FROM lockers l 
         JOIN compartimentos c 
             ON l.id = c.locker_id 
         WHERE c.status = 'OCUPADO' AND l.id = ?`, [id], (err, result) => {
         if (err) {
-            res.status(500).send('Erro no servidor 1')
+            res.status(500).send('Erro no servidor')
         } else if (result) {
-            console.log(result)
             res.status(400).send('O locker escolhido possui compartimento ocupado');
         } else {
             console.log("nenhum compartimento ocupado")
             db.run(`DELETE FROM lockers WHERE id = ?`, [id], (err) => {
                 if (err) {
-                    console.log(err)
-                    res.status(500).send('Erro no servidor2')
+                    res.status(500).send('Erro no servidor')
                 } else {
                     res.status(200).send('Locker excluido com sucesso')
                 }
@@ -105,10 +99,8 @@ app.delete('/locker/:id', (req, res) => {
 app.post('/locker/compartimento/:locker_id', (req, res) => {
     const { tamanho } = req.body;
     const { locker_id } = req.params;
-    console.log(locker_id)
 
     if (!locker_id || !tamanho) {
-        console.log("erro 1")
         return res.status(400).json({ erro: 'locker_id e tamanho são obrigatórios' });
     }
 
@@ -116,7 +108,6 @@ app.post('/locker/compartimento/:locker_id', (req, res) => {
 
     db.get(`SELECT id FROM lockers WHERE id = ?`, [locker_id], (err, locker) => {
         if (err) {
-            console.log(err);
             return res.status(500).json({ erro: 'erro ao validar locker' });
         }
 
@@ -126,7 +117,6 @@ app.post('/locker/compartimento/:locker_id', (req, res) => {
 
         db.run(`INSERT INTO compartimentos (locker_id, tamanho) VALUES (?, ?)`, [locker_id, tamanhoNormalizado], (insertErr) => {
             if (insertErr) {
-                console.log(insertErr);
                 return res.status(500).json({ erro: 'erro ao cadastrar compartimento' });
             }
 
@@ -156,20 +146,17 @@ app.delete('/locker/compartimento/:id', (req, res) => {
     // Ver se compartimento esta livre ou não
     db.get(`SELECT * FROM compartimentos WHERE id = ?`, [id], (err, result) => {
         if (err) {
-            console.log(err)
             res.status(500).send("Erro no servidor ao deletar locker");
         } else if (!result) {
             res.status(400).send("o Compartimento não existe");
         }
         else {
-            console.log(result)
             if (result.status === 'OCUPADO') {
                 res.status(404).send("O compartimento está ocupado")
             }
             else {
                 db.run(`DELETE FROM compartimentos WHERE id = ?`, [id], (err) => {
                     if (err) {
-                        console.log(err)
                         res.status(500).send("Erro no servidor ao deletar locker");
                     }
                     else {
@@ -187,10 +174,8 @@ app.get('/locker/compartimento/:locker_id', (req, res) => {
 
     db.all(`SELECT * FROM compartimentos WHERE locker_id = ?`, [locker_id], (err, result) => {
         if (err) {
-            console.log("erro1")
             res.status(500).json({ 'erro': 'erro ao obter compartimentos' })
         } else if (!result) {
-            console.log("erro2")
             res.status(404).send('O locker não possui comparimentos alocados')
         } else {
             res.status(200).json(result)
@@ -236,12 +221,10 @@ app.get('/locker/compartimento/:id/:tamanho', (req, res) => {
 
     db.all(`SELECT * FROM compartimentos WHERE tamanho = ? AND locker_id = ? AND status = "LIVRE" ORDER BY id`, [tamanhoNormalizado, id], function (err, result) {
         if (err) {
-            console.log(err);
             return res.status(500).json({ erro: 'erro no servidor' });
         }
 
         if (!result) {
-            console.log('nenhum compartimento disponível');
             return res.status(404).json({ erro: 'Nenhum compartimento disponivel' });
         }
 

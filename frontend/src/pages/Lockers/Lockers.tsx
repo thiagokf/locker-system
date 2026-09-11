@@ -1,4 +1,3 @@
-import React from 'react'
 import { useState, useEffect } from 'react';
 import { getLockers } from '../../lib/actions';
 import type { LockerProps } from '../../types/locker';

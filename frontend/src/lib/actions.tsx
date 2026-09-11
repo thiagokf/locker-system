@@ -208,9 +208,10 @@ export async function retirarEntrega(codigo_retirada: string) {
     }
 }
 
-export async function getLogs(): Promise<LogsProps[]>{
+export async function getLogs(day: Date): Promise<LogsProps[]>{
     try {
-        const res = await api.get('/logs');
+        const dataFormatada = day.toLocaleDateString('pt-BR').replace(/\//g, '-');
+        const res = await api.get(`/logs/${dataFormatada}`);
         
         console.log(res.data)
         return res.data
