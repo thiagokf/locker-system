@@ -13,17 +13,22 @@ const Compartimento = () => {
 
     const tamanho = useRef<HTMLInputElement>(null);
 
-    console.log(id)
     async function cadastrar_compartimento(e: React.FormEvent) {
         e.preventDefault();
         setSucess(false)
 
         if (!tamanho.current || !tamanho.current.value) {
-            setMessage("Id ou localização invalida")
+          return
+        }
+        const tamanhoNormalizado = (tamanho.current.value).toUpperCase();
+        console.log(tamanhoNormalizado);
+        if (tamanhoNormalizado != "P" && tamanhoNormalizado != "M" && tamanhoNormalizado != "G" && tamanhoNormalizado != "XG") {
+            setMessage("Valor Invalido");
+            setSucess(false);
             return
         }
         new_compartimento.locker_id = Number(id);
-        new_compartimento.tamanho = tamanho.current.value;
+        new_compartimento.tamanho = tamanhoNormalizado;
 
         try {
             const res = await postCompartimento(new_compartimento);
@@ -44,7 +49,7 @@ const Compartimento = () => {
       </div>
       <div className={classes.body}>
         <form className={classes.form} onSubmit={cadastrar_compartimento}>
-          <input className={classes.input} type="text" placeholder="Tamanho do compartimento" ref={tamanho}/>
+          <input className={classes.input} type="text" placeholder="Tamanho do compartimento (P, M, G ou XG)" ref={tamanho}/>
           <button className={classes.submitButton} type="submit">Cadastrar</button>
           {sucess !== null && (
             <p className={classes.message} data-success={sucess}>{message}</p>

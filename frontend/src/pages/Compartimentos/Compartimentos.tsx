@@ -25,7 +25,7 @@ const Compartimentos = () => {
     return (
         <div className={classes.main}>
             <div className={classes.header}>
-                <h1 className={classes.title}>Compartimentos compser {localizacao}</h1>
+                <h1 className={classes.title}>Compartimentos {localizacao}</h1>
                 <Link className={classes.backButton} to='/lockers'>← Voltar</Link>
             </div>
             <div className={classes.body}>

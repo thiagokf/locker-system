@@ -26,10 +26,6 @@
   text-transform: uppercase;
 }
 
-.title::before {
-  content: '📦 ';
-}
-
 .body {
   width: min(480px, 100%);
   padding: 28px 24px;
