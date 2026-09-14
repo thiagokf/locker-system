@@ -49,7 +49,7 @@ O `api-gateway` é o único ponto de entrada do backend, responsável por rotear
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/locker-system.git
+   git clone https://github.com/thiagokf/locker-system.git
    cd locker-system
    ```
 
